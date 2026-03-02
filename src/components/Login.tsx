@@ -20,6 +20,7 @@ export default function Login({ onAdminLoginSuccess }: LoginProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState(""); // E.164
+  const [password, setPassword] = useState("");
 
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
@@ -34,6 +35,16 @@ export default function Login({ onAdminLoginSuccess }: LoginProps) {
   const isValidEmail = useMemo(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), [email]);
   const isValidPhoneE164 = useMemo(() => /^\+\d{10,15}$/.test(mobile), [mobile]); // + and 10-15 digits
   const isValidOtp = useMemo(() => /^\d{4}$/.test(otp), [otp]);
+
+  const isPasswordValid = useMemo(() => {
+    if (!password) return false;
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasNum = /[0-9]/.test(password);
+    const hasSpecial = /[^A-Za-z0-9]/.test(password);
+    const hasMinLength = password.length >= 8;
+    return hasUpper && hasLower && hasNum && hasSpecial && hasMinLength;
+  }, [password]);
 
   const startTimer = () => {
     setTimer(30);
@@ -61,7 +72,7 @@ export default function Login({ onAdminLoginSuccess }: LoginProps) {
   const sendOtp = async () => {
     setError(null);
 
-    if (!name.trim() || !email.trim() || !mobile.trim()) {
+    if (!name.trim() || !email.trim() || !mobile.trim() || !password.trim()) {
       setError("Please fill all details");
       return;
     }
@@ -163,6 +174,22 @@ export default function Login({ onAdminLoginSuccess }: LoginProps) {
             </div>
 
             <div>
+              <label className="text-sm font-medium text-slate-700 block mb-1.5 ml-1">Password</label>
+              <input
+                className="w-full rounded-2xl bg-white border border-slate-200 text-slate-800 px-4 py-3.5 outline-none focus:ring-2 focus:ring-rose-200 transition-all shadow-sm"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                type="password"
+              />
+              {password.length > 0 && !isPasswordValid && (
+                <p className="text-rose-500 text-sm mt-1 ml-1 font-medium">
+                  Password must contain uppercase, lowercase, number, special character, and minimum 8 characters.
+                </p>
+              )}
+            </div>
+
+            <div>
               <label className="text-sm font-medium text-slate-700 block mb-1.5 ml-1">Phone (with country code)</label>
               <input
                 className="w-full rounded-2xl bg-white border border-slate-200 text-slate-800 px-4 py-3.5 outline-none focus:ring-2 focus:ring-rose-200 transition-all shadow-sm"
@@ -178,7 +205,7 @@ export default function Login({ onAdminLoginSuccess }: LoginProps) {
             <button
               className="mt-6 w-full rounded-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-3.5 transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:hover:shadow-md"
               onClick={sendOtp}
-              disabled={loading}
+              disabled={loading || !isPasswordValid}
             >
               {loading ? "Sending..." : "Send OTP"}
             </button>
