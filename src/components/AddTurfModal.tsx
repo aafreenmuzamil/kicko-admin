@@ -20,6 +20,9 @@ export default function AddTurfModal({ isOpen, onClose }: AddTurfModalProps) {
     const [formData, setFormData] = useState({
         name: '',
         area: '',
+        location: '',
+        sportType: '',
+        capacity: '',
         latitude: '',
         longitude: '',
         city: '',
@@ -31,8 +34,9 @@ export default function AddTurfModal({ isOpen, onClose }: AddTurfModalProps) {
 
     if (!isOpen) return null;
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target;
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value, type } = e.target;
+        const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
         setFormData((prev) => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value,
@@ -72,6 +76,9 @@ export default function AddTurfModal({ isOpen, onClose }: AddTurfModalProps) {
         setFormData({ // Reset form
             name: '',
             area: '',
+            location: '',
+            sportType: '',
+            capacity: '',
             latitude: '',
             longitude: '',
             city: '',
@@ -137,6 +144,56 @@ export default function AddTurfModal({ isOpen, onClose }: AddTurfModalProps) {
                                 className="w-full px-4 py-3 border border-slate-200 rounded-2xl bg-slate-50/50 focus:ring-2 focus:ring-teal-200 outline-none transition-shadow shadow-sm focus:bg-white"
                                 placeholder="e.g. Chennai"
                             />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-600 block ml-1">Turf Location</label>
+                            <input
+                                type="text"
+                                name="location"
+                                required
+                                value={formData.location}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border border-slate-200 rounded-2xl bg-slate-50/50 focus:ring-2 focus:ring-teal-200 outline-none transition-shadow shadow-sm focus:bg-white"
+                                placeholder="e.g. Near Anna Nagar Metro, Chennai"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-600 block ml-1">Type of Sports</label>
+                            <select
+                                name="sportType"
+                                required
+                                value={formData.sportType}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border border-slate-200 rounded-2xl bg-slate-50/50 focus:ring-2 focus:ring-teal-200 outline-none transition-shadow shadow-sm focus:bg-white appearance-none"
+                            >
+                                <option value="" disabled>Select a sport</option>
+                                <option value="Cricket">Cricket</option>
+                                <option value="Football">Football</option>
+                                <option value="Basketball">Basketball</option>
+                                <option value="Hockey">Hockey</option>
+                                <option value="Baseball">Baseball</option>
+                                <option value="Tennis">Tennis</option>
+                                <option value="Badminton">Badminton</option>
+                                <option value="Volleyball">Volleyball</option>
+                            </select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-600 block ml-1">Turf Capacity</label>
+                            <select
+                                name="capacity"
+                                required
+                                value={formData.capacity}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border border-slate-200 rounded-2xl bg-slate-50/50 focus:ring-2 focus:ring-teal-200 outline-none transition-shadow shadow-sm focus:bg-white appearance-none"
+                            >
+                                <option value="" disabled>Select capacity</option>
+                                {[5, 6, 7, 8, 9, 10, 11, 12, 15].map(num => (
+                                    <option key={num} value={num}>Members per team {num}</option>
+                                ))}
+                            </select>
                         </div>
 
                         <div className="space-y-2">
